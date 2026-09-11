@@ -1,5 +1,10 @@
 # 🧊 MesoTech Cooling
 
+[![Live Demo](https://img.shields.io/badge/Demo-Canlıda-brightgreen?style=for-the-badge&logo=render)](https://mesotech-cooling.onrender.com/)
+
+🚀 **Canlı Kontrol Paneli:** [https://mesotech-cooling.onrender.com/](https://mesotech-cooling.onrender.com/)
+
+
 **IoT tabanlı, kapalı devre akıllı soğutma sistemi** — distilasyon üniteleri gibi
 sürekli soğutma ihtiyacı olan laboratuvar/endüstriyel cihazlar için şebeke suyu
 tüketimini sıfırlamayı ve chiller sistemlerine göre daha düşük enerjiyle
