@@ -1,0 +1,7 @@
+Flask>=2.3
+Flask-SocketIO>=5.3
+numpy>=1.24
+# Raspberry Pi (sadece cihazda):
+# RPi.GPIO==0.7.1
+# w1thermsensor==2.0.0
+# scikit-learn>=1.3
