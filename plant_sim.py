@@ -39,9 +39,9 @@ class PlantSim:
         elapsed = time.time() - self.t0
         self.t_amb = 21.0 + 3.0 * math.sin(elapsed / 90.0)
         flow_eff = (self.pump / 100.0) * self.blockage * (1.0 if self.level > 15 else 0.02)
-        cool_eff = (self.fan / 100.0) * self.dirt * 0.055
-        mix = 0.045 * flow_eff
-        self.t_in += dt * (0.085 * (68.0 - self.t_out) - mix * (self.t_in - self.t_out))
+        cool_eff = (self.fan / 100.0) * self.dirt * 0.40
+        mix = 0.12 * flow_eff
+        self.t_in += dt * (0.03 * (68.0 - self.t_out) - mix * (self.t_in - self.t_out))
         self.t_out += dt * (
             mix * (self.t_in - self.t_out)
             - cool_eff * (self.t_out - self.t_amb)
