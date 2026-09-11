@@ -154,8 +154,7 @@ mesotech-cooling/
 ├── anomaly_detector.py       # Fizik kuralları + IsolationForest/RobustZ
 ├── templates/
 │   └── dashboard.html         # Canlı web paneli
-├── requirements.txt
-└── DUZELTMELER.md             # Bilinen düzeltmelerin kaydı (bkz. aşağı)
+└── requirements.txt
 ```
 
 
