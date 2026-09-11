@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MesoTech Cooling | IoT Dashboard</title>
+<style>
+  :root {
+    --bg: #0f1120;
+    --card: #1a1d33;
+    --accent: #7c6cf6;
+    --accent2: #4fd1c5;
+    --danger: #f75c5c;
+    --warn: #f5b942;
+    --ok: #3ddc97;
+    --text: #eef0fb;
+    --muted: #9aa0c3;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    background: linear-gradient(180deg, #0f1120 0%, #151833 100%);
+    color: var(--text);
+    padding: 20px;
+  }
+  h1 { font-size: 1.3rem; margin: 0 0 4px; }
+  .sub { color: var(--muted); font-size: 0.85rem; margin-bottom: 18px; }
+  .status-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 999px; font-size: 0.8rem;
+    background: rgba(255,255,255,0.06); margin-right: 8px;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot.ok { background: var(--ok); }
+  .dot.bad { background: var(--danger); }
+  .grid {
+    display: grid; gap: 14px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    margin-bottom: 18px;
+  }
+  .card {
+    background: var(--card); border-radius: 14px; padding: 16px 18px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+  }
+  .card .label { color: var(--muted); font-size: 0.8rem; margin-bottom: 6px; }
+  .card .value { font-size: 1.8rem; font-weight: 700; }
+  .card .unit { font-size: 1rem; color: var(--muted); font-weight: 400; }
+  .bar { height: 6px; border-radius: 4px; background: rgba(255,255,255,0.08); margin-top: 10px; overflow: hidden; }
+  .bar > span { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+  button {
+    background: var(--accent); color: #fff; border: none; border-radius: 10px;
+    padding: 10px 16px; font-size: 0.85rem; cursor: pointer; font-weight: 600;
+  }
+  button.danger { background: var(--danger); }
+  button.secondary { background: rgba(255,255,255,0.08); color: var(--text); }
+  button:hover { filter: brightness(1.1); }
+  .panel { background: var(--card); border-radius: 14px; padding: 16px 18px; margin-bottom: 18px; }
+  .panel h2 { font-size: 1rem; margin: 0 0 12px; }
+  .alarm-list { list-style: none; margin: 0; padding: 0; }
+  .alarm-list li {
+    padding: 8px 10px; border-radius: 8px; margin-bottom: 6px;
+    background: rgba(247,92,92,0.12); color: #ffb3b3; font-size: 0.85rem;
+  }
+  .alarm-list.empty li { background: rgba(61,220,151,0.12); color: var(--ok); }
+  .slider-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .slider-row label { min-width: 110px; font-size: 0.85rem; color: var(--muted); }
+  input[type=range] { flex: 1; }
+</style>
+</head>
+<body>
+
+<h1>🧊 MesoTech Cooling — Akıllı Soğutma Sistemi</h1>
+<div class="sub">
+  <span class="status-pill"><span class="dot ok" id="connDot"></span><span id="connText">Bağlanıyor...</span></span>
+  <span class="status-pill" id="modePill">—</span>
+</div>
+
+<div class="grid">
+  <div class="card"><div class="label">Serpantin Giriş Sıcaklığı</div><div class="value" id="tIn">--<span class="unit">°C</span></div></div>
+  <div class="card"><div class="label">Serpantin Çıkış Sıcaklığı</div><div class="value" id="tOut">--<span class="unit">°C</span></div></div>
+  <div class="card"><div class="label">ΔT</div><div class="value" id="dT">--<span class="unit">°C</span></div></div>
+  <div class="card"><div class="label">Akış Hızı</div><div class="value" id="flow">--<span class="unit">L/dk</span></div></div>
+  <div class="card">
+    <div class="label">Pompa Hızı</div><div class="value" id="pumpV">--<span class="unit">%</span></div>
+    <div class="bar"><span id="pumpBar" style="width:0%"></span></div>
+  </div>
+  <div class="card">
+    <div class="label">Fan Hızı</div><div class="value" id="fanV">--<span class="unit">%</span></div>
+    <div class="bar"><span id="fanBar" style="width:0%"></span></div>
+  </div>
+  <div class="card"><div class="label">Güç Tüketimi</div><div class="value" id="power">--<span class="unit">W</span></div></div>
+  <div class="card"><div class="label">Su Seviyesi</div><div class="value" id="level">--<span class="unit">%</span></div></div>
+  <div class="card"><div class="label">Toplam Su Tasarrufu</div><div class="value" id="water">--<span class="unit">L</span></div></div>
+  <div class="card"><div class="label">Enerji Tasarrufu</div><div class="value" id="energy">--<span class="unit">kWh</span></div></div>
+  <div class="card"><div class="label">CO₂ Azaltımı</div><div class="value" id="co2">--<span class="unit">kg</span></div></div>
+</div>
+
+<div class="panel">
+  <h2>Sistem Kontrolleri</h2>
+  <div class="controls">
+    <button onclick="control('reset_system')" class="secondary">🔄 Sistemi Sıfırla</button>
+    <button onclick="control('emergency_stop')" class="danger">⛔ Acil Durdur</button>
+  </div>
+  <div class="slider-row">
+    <label>Hedef T_out (°C)</label>
+    <input type="range" min="18" max="35" step="0.5" id="targetSlider" oninput="document.getElementById('targetVal').textContent=this.value">
+    <span id="targetVal">25</span>
+    <button class="secondary" onclick="setTarget()">Uygula</button>
+  </div>
+  <div class="controls">
+    <button class="secondary" onclick="setFault('none')">Arıza: Yok</button>
+    <button class="secondary" onclick="setFault('dirty')">Arıza: Kirli</button>
+    <button class="secondary" onclick="setFault('blockage')">Arıza: Tıkanıklık</button>
+    <button class="secondary" onclick="setFault('sensor')">Arıza: Sensör</button>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Aktif Uyarılar</h2>
+  <ul class="alarm-list" id="alarmList"><li>Yükleniyor...</li></ul>
+</div>
+
+<script>
+async function poll() {
+  try {
+    const res = await fetch('/api/system/status');
+    const d = await res.json();
+    document.getElementById('connDot').className = 'dot ok';
+    document.getElementById('connText').textContent = 'Bağlı';
+    document.getElementById('modePill').textContent = d.system_state && d.system_state.emergency_stop
+      ? '🔴 ACİL DURUM' : (d.system_state && d.system_state.running ? '🟢 Çalışıyor' : '🟡 Durduruldu');
+
+    const set = (id, v, digits=1) => document.getElementById(id).innerHTML =
+      (typeof v === 'number' ? v.toFixed(digits) : '--') + document.getElementById(id).querySelector('.unit').outerHTML;
+
+    document.getElementById('tIn').innerHTML = (d.temp_in ?? 0).toFixed(1) + '<span class="unit">°C</span>';
+    document.getElementById('tOut').innerHTML = (d.temp_out ?? 0).toFixed(1) + '<span class="unit">°C</span>';
+    document.getElementById('dT').innerHTML = (d.delta_t ?? 0).toFixed(1) + '<span class="unit">°C</span>';
+    document.getElementById('flow').innerHTML = (d.flow_rate ?? 0).toFixed(1) + '<span class="unit">L/dk</span>';
+    document.getElementById('pumpV').innerHTML = (d.pump_speed ?? 0).toFixed(0) + '<span class="unit">%</span>';
+    document.getElementById('fanV').innerHTML = (d.fan_speed ?? 0).toFixed(0) + '<span class="unit">%</span>';
+    document.getElementById('power').innerHTML = (d.power_w ?? 0).toFixed(0) + '<span class="unit">W</span>';
+    document.getElementById('level').innerHTML = (d.level ?? 0).toFixed(0) + '<span class="unit">%</span>';
+    document.getElementById('water').innerHTML = (d.water_saved_l ?? 0).toFixed(0) + '<span class="unit">L</span>';
+    document.getElementById('energy').innerHTML = (d.energy_saved_kwh ?? 0).toFixed(2) + '<span class="unit">kWh</span>';
+    document.getElementById('co2').innerHTML = (d.co2_saved_kg ?? 0).toFixed(2) + '<span class="unit">kg</span>';
+
+    document.getElementById('pumpBar').style.width = (d.pump_speed ?? 0) + '%';
+    document.getElementById('fanBar').style.width = (d.fan_speed ?? 0) + '%';
+
+    const alarmList = document.getElementById('alarmList');
+    if (d.anomalies && d.anomalies.length) {
+      alarmList.className = 'alarm-list';
+      alarmList.innerHTML = d.anomalies.map(a => `<li>⚠️ ${a}</li>`).join('');
+    } else {
+      alarmList.className = 'alarm-list empty';
+      alarmList.innerHTML = '<li>✅ Anomali yok — sistem normal çalışıyor</li>';
+    }
+  } catch (e) {
+    document.getElementById('connDot').className = 'dot bad';
+    document.getElementById('connText').textContent = 'Bağlantı kesildi';
+  }
+}
+
+async function control(action, extra) {
+  await fetch('/api/system/control', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(Object.assign({ action }, extra || {}))
+  });
+  poll();
+}
+
+function setTarget() {
+  const v = parseFloat(document.getElementById('targetSlider').value);
+  control('set_target_delta', { value: v });
+}
+
+function setFault(kind) {
+  control('set_fault', { value: kind });
+}
+
+poll();
+setInterval(poll, 1000);
+</script>
+</body>
+</html>
