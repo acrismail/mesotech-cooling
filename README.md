@@ -159,7 +159,7 @@ mesotech-cooling/
 
 | İsim | Rol |
 |---|---|
-| Ahmet Selman Mızraklıdağ | Proje Koordinasyonu ve İş Geliştirme |
+| Ahmet Selman Mızraklıdağ | Donanım |
 | İsmail Açar | Yazılım Geliştirme ve Yapay Zeka |
 | Dr. Öğr. Üyesi M. Hadi Süzer | Donanım Geliştirme ve Akademik Danışmanlık |
 | Prof. Dr. Oktay KESKİN   | Proje Koordinasyonu/ İş Geliştirme |
